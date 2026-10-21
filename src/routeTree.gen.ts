@@ -9,86 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RelatorioBolsasRouteImport } from './routes/relatorio-bolsas'
-import { Route as Proposta2AjustePtrRouteImport } from './routes/proposta-2-ajuste-ptr'
-import { Route as Proposta1AjustePtrRouteImport } from './routes/proposta-1-ajuste-ptr'
-import { Route as ProjetosPmoRouteImport } from './routes/projetos-pmo'
-import { Route as ProjetosRouteImport } from './routes/projetos'
-import { Route as ProjetoPesquisaRouteImport } from './routes/projeto-pesquisa'
-import { Route as OnboardingProjetoRouteImport } from './routes/onboarding-projeto'
-import { Route as NotasFiscaisRouteImport } from './routes/notas-fiscais'
-import { Route as FluxoPagamentoRouteImport } from './routes/fluxo-pagamento'
-import { Route as CentralSolicitacoesRouteImport } from './routes/central-solicitacoes'
-import { Route as CartaSebraeRouteImport } from './routes/carta-sebrae'
-import { Route as CadastroBolsistasRouteImport } from './routes/cadastro-bolsistas'
-import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProjetosIndexRouteImport } from './routes/projetos.index'
+import { Route as AjudaRouteImport } from './routes/ajuda'
+import { Route as CadastroBolsistasRouteImport } from './routes/cadastro-bolsistas'
+import { Route as CartaSebraeRouteImport } from './routes/carta-sebrae'
+import { Route as CentralSolicitacoesRouteImport } from './routes/central-solicitacoes'
+import { Route as FluxoPagamentoRouteImport } from './routes/fluxo-pagamento'
+import { Route as NotasFiscaisRouteImport } from './routes/notas-fiscais'
+import { Route as OnboardingProjetoRouteImport } from './routes/onboarding-projeto'
+import { Route as ProjetoPesquisaRouteImport } from './routes/projeto-pesquisa'
+import { Route as ProjetosRouteImport } from './routes/projetos'
+import { Route as ProjetosPmoRouteImport } from './routes/projetos-pmo'
+import { Route as Proposta1AjustePtrRouteImport } from './routes/proposta-1-ajuste-ptr'
+import { Route as Proposta2AjustePtrRouteImport } from './routes/proposta-2-ajuste-ptr'
+import { Route as RelatorioBolsasRouteImport } from './routes/relatorio-bolsas'
 import { Route as CentralSolicitacoesIndexRouteImport } from './routes/central-solicitacoes.index'
-import { Route as CentralSolicitacoesPassagensDiariasRouteImport } from './routes/central-solicitacoes.passagens-diarias'
-import { Route as CentralSolicitacoesHistoricoGeralRouteImport } from './routes/central-solicitacoes.historico-geral'
-import { Route as CentralSolicitacoesComprasPagamentosRouteImport } from './routes/central-solicitacoes.compras-pagamentos'
-import { Route as CentralSolicitacoesCertificadoRouteImport } from './routes/central-solicitacoes.certificado'
 import { Route as CentralSolicitacoesAjustePtrRouteImport } from './routes/central-solicitacoes.ajuste-ptr'
+import { Route as CentralSolicitacoesCertificadoRouteImport } from './routes/central-solicitacoes.certificado'
+import { Route as CentralSolicitacoesComprasPagamentosRouteImport } from './routes/central-solicitacoes.compras-pagamentos'
+import { Route as CentralSolicitacoesHistoricoGeralRouteImport } from './routes/central-solicitacoes.historico-geral'
+import { Route as CentralSolicitacoesPassagensDiariasRouteImport } from './routes/central-solicitacoes.passagens-diarias'
+import { Route as ProjetosIndexRouteImport } from './routes/projetos.index'
 
-const RelatorioBolsasRoute = RelatorioBolsasRouteImport.update({
-  id: '/relatorio-bolsas',
-  path: '/relatorio-bolsas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Proposta2AjustePtrRoute = Proposta2AjustePtrRouteImport.update({
-  id: '/proposta-2-ajuste-ptr',
-  path: '/proposta-2-ajuste-ptr',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Proposta1AjustePtrRoute = Proposta1AjustePtrRouteImport.update({
-  id: '/proposta-1-ajuste-ptr',
-  path: '/proposta-1-ajuste-ptr',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjetosPmoRoute = ProjetosPmoRouteImport.update({
-  id: '/projetos-pmo',
-  path: '/projetos-pmo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjetosRoute = ProjetosRouteImport.update({
-  id: '/projetos',
-  path: '/projetos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjetoPesquisaRoute = ProjetoPesquisaRouteImport.update({
-  id: '/projeto-pesquisa',
-  path: '/projeto-pesquisa',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingProjetoRoute = OnboardingProjetoRouteImport.update({
-  id: '/onboarding-projeto',
-  path: '/onboarding-projeto',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotasFiscaisRoute = NotasFiscaisRouteImport.update({
-  id: '/notas-fiscais',
-  path: '/notas-fiscais',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FluxoPagamentoRoute = FluxoPagamentoRouteImport.update({
-  id: '/fluxo-pagamento',
-  path: '/fluxo-pagamento',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CentralSolicitacoesRoute = CentralSolicitacoesRouteImport.update({
-  id: '/central-solicitacoes',
-  path: '/central-solicitacoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CartaSebraeRoute = CartaSebraeRouteImport.update({
-  id: '/carta-sebrae',
-  path: '/carta-sebrae',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CadastroBolsistasRoute = CadastroBolsistasRouteImport.update({
-  id: '/cadastro-bolsistas',
-  path: '/cadastro-bolsistas',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AjudaRoute = AjudaRouteImport.update({
@@ -96,44 +41,70 @@ const AjudaRoute = AjudaRouteImport.update({
   path: '/ajuda',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CadastroBolsistasRoute = CadastroBolsistasRouteImport.update({
+  id: '/cadastro-bolsistas',
+  path: '/cadastro-bolsistas',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjetosIndexRoute = ProjetosIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ProjetosRoute,
+const CartaSebraeRoute = CartaSebraeRouteImport.update({
+  id: '/carta-sebrae',
+  path: '/carta-sebrae',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CentralSolicitacoesRoute = CentralSolicitacoesRouteImport.update({
+  id: '/central-solicitacoes',
+  path: '/central-solicitacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FluxoPagamentoRoute = FluxoPagamentoRouteImport.update({
+  id: '/fluxo-pagamento',
+  path: '/fluxo-pagamento',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotasFiscaisRoute = NotasFiscaisRouteImport.update({
+  id: '/notas-fiscais',
+  path: '/notas-fiscais',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingProjetoRoute = OnboardingProjetoRouteImport.update({
+  id: '/onboarding-projeto',
+  path: '/onboarding-projeto',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjetoPesquisaRoute = ProjetoPesquisaRouteImport.update({
+  id: '/projeto-pesquisa',
+  path: '/projeto-pesquisa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjetosRoute = ProjetosRouteImport.update({
+  id: '/projetos',
+  path: '/projetos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjetosPmoRoute = ProjetosPmoRouteImport.update({
+  id: '/projetos-pmo',
+  path: '/projetos-pmo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Proposta1AjustePtrRoute = Proposta1AjustePtrRouteImport.update({
+  id: '/proposta-1-ajuste-ptr',
+  path: '/proposta-1-ajuste-ptr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Proposta2AjustePtrRoute = Proposta2AjustePtrRouteImport.update({
+  id: '/proposta-2-ajuste-ptr',
+  path: '/proposta-2-ajuste-ptr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatorioBolsasRoute = RelatorioBolsasRouteImport.update({
+  id: '/relatorio-bolsas',
+  path: '/relatorio-bolsas',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CentralSolicitacoesIndexRoute =
   CentralSolicitacoesIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => CentralSolicitacoesRoute,
-  } as any)
-const CentralSolicitacoesPassagensDiariasRoute =
-  CentralSolicitacoesPassagensDiariasRouteImport.update({
-    id: '/passagens-diarias',
-    path: '/passagens-diarias',
-    getParentRoute: () => CentralSolicitacoesRoute,
-  } as any)
-const CentralSolicitacoesHistoricoGeralRoute =
-  CentralSolicitacoesHistoricoGeralRouteImport.update({
-    id: '/historico-geral',
-    path: '/historico-geral',
-    getParentRoute: () => CentralSolicitacoesRoute,
-  } as any)
-const CentralSolicitacoesComprasPagamentosRoute =
-  CentralSolicitacoesComprasPagamentosRouteImport.update({
-    id: '/compras-pagamentos',
-    path: '/compras-pagamentos',
-    getParentRoute: () => CentralSolicitacoesRoute,
-  } as any)
-const CentralSolicitacoesCertificadoRoute =
-  CentralSolicitacoesCertificadoRouteImport.update({
-    id: '/certificado',
-    path: '/certificado',
     getParentRoute: () => CentralSolicitacoesRoute,
   } as any)
 const CentralSolicitacoesAjustePtrRoute =
@@ -142,6 +113,35 @@ const CentralSolicitacoesAjustePtrRoute =
     path: '/ajuste-ptr',
     getParentRoute: () => CentralSolicitacoesRoute,
   } as any)
+const CentralSolicitacoesCertificadoRoute =
+  CentralSolicitacoesCertificadoRouteImport.update({
+    id: '/certificado',
+    path: '/certificado',
+    getParentRoute: () => CentralSolicitacoesRoute,
+  } as any)
+const CentralSolicitacoesComprasPagamentosRoute =
+  CentralSolicitacoesComprasPagamentosRouteImport.update({
+    id: '/compras-pagamentos',
+    path: '/compras-pagamentos',
+    getParentRoute: () => CentralSolicitacoesRoute,
+  } as any)
+const CentralSolicitacoesHistoricoGeralRoute =
+  CentralSolicitacoesHistoricoGeralRouteImport.update({
+    id: '/historico-geral',
+    path: '/historico-geral',
+    getParentRoute: () => CentralSolicitacoesRoute,
+  } as any)
+const CentralSolicitacoesPassagensDiariasRoute =
+  CentralSolicitacoesPassagensDiariasRouteImport.update({
+    id: '/passagens-diarias',
+    path: '/passagens-diarias',
+    getParentRoute: () => CentralSolicitacoesRoute,
+  } as any)
+const ProjetosIndexRoute = ProjetosIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProjetosRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -300,88 +300,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/relatorio-bolsas': {
-      id: '/relatorio-bolsas'
-      path: '/relatorio-bolsas'
-      fullPath: '/relatorio-bolsas'
-      preLoaderRoute: typeof RelatorioBolsasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/proposta-2-ajuste-ptr': {
-      id: '/proposta-2-ajuste-ptr'
-      path: '/proposta-2-ajuste-ptr'
-      fullPath: '/proposta-2-ajuste-ptr'
-      preLoaderRoute: typeof Proposta2AjustePtrRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/proposta-1-ajuste-ptr': {
-      id: '/proposta-1-ajuste-ptr'
-      path: '/proposta-1-ajuste-ptr'
-      fullPath: '/proposta-1-ajuste-ptr'
-      preLoaderRoute: typeof Proposta1AjustePtrRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projetos-pmo': {
-      id: '/projetos-pmo'
-      path: '/projetos-pmo'
-      fullPath: '/projetos-pmo'
-      preLoaderRoute: typeof ProjetosPmoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projetos': {
-      id: '/projetos'
-      path: '/projetos'
-      fullPath: '/projetos'
-      preLoaderRoute: typeof ProjetosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projeto-pesquisa': {
-      id: '/projeto-pesquisa'
-      path: '/projeto-pesquisa'
-      fullPath: '/projeto-pesquisa'
-      preLoaderRoute: typeof ProjetoPesquisaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding-projeto': {
-      id: '/onboarding-projeto'
-      path: '/onboarding-projeto'
-      fullPath: '/onboarding-projeto'
-      preLoaderRoute: typeof OnboardingProjetoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notas-fiscais': {
-      id: '/notas-fiscais'
-      path: '/notas-fiscais'
-      fullPath: '/notas-fiscais'
-      preLoaderRoute: typeof NotasFiscaisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fluxo-pagamento': {
-      id: '/fluxo-pagamento'
-      path: '/fluxo-pagamento'
-      fullPath: '/fluxo-pagamento'
-      preLoaderRoute: typeof FluxoPagamentoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/central-solicitacoes': {
-      id: '/central-solicitacoes'
-      path: '/central-solicitacoes'
-      fullPath: '/central-solicitacoes'
-      preLoaderRoute: typeof CentralSolicitacoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/carta-sebrae': {
-      id: '/carta-sebrae'
-      path: '/carta-sebrae'
-      fullPath: '/carta-sebrae'
-      preLoaderRoute: typeof CartaSebraeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cadastro-bolsistas': {
-      id: '/cadastro-bolsistas'
-      path: '/cadastro-bolsistas'
-      fullPath: '/cadastro-bolsistas'
-      preLoaderRoute: typeof CadastroBolsistasRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ajuda': {
@@ -391,19 +314,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AjudaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/cadastro-bolsistas': {
+      id: '/cadastro-bolsistas'
+      path: '/cadastro-bolsistas'
+      fullPath: '/cadastro-bolsistas'
+      preLoaderRoute: typeof CadastroBolsistasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/projetos/': {
-      id: '/projetos/'
-      path: '/'
-      fullPath: '/projetos/'
-      preLoaderRoute: typeof ProjetosIndexRouteImport
-      parentRoute: typeof ProjetosRoute
+    '/carta-sebrae': {
+      id: '/carta-sebrae'
+      path: '/carta-sebrae'
+      fullPath: '/carta-sebrae'
+      preLoaderRoute: typeof CartaSebraeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/central-solicitacoes': {
+      id: '/central-solicitacoes'
+      path: '/central-solicitacoes'
+      fullPath: '/central-solicitacoes'
+      preLoaderRoute: typeof CentralSolicitacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fluxo-pagamento': {
+      id: '/fluxo-pagamento'
+      path: '/fluxo-pagamento'
+      fullPath: '/fluxo-pagamento'
+      preLoaderRoute: typeof FluxoPagamentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notas-fiscais': {
+      id: '/notas-fiscais'
+      path: '/notas-fiscais'
+      fullPath: '/notas-fiscais'
+      preLoaderRoute: typeof NotasFiscaisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding-projeto': {
+      id: '/onboarding-projeto'
+      path: '/onboarding-projeto'
+      fullPath: '/onboarding-projeto'
+      preLoaderRoute: typeof OnboardingProjetoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projeto-pesquisa': {
+      id: '/projeto-pesquisa'
+      path: '/projeto-pesquisa'
+      fullPath: '/projeto-pesquisa'
+      preLoaderRoute: typeof ProjetoPesquisaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projetos': {
+      id: '/projetos'
+      path: '/projetos'
+      fullPath: '/projetos'
+      preLoaderRoute: typeof ProjetosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projetos-pmo': {
+      id: '/projetos-pmo'
+      path: '/projetos-pmo'
+      fullPath: '/projetos-pmo'
+      preLoaderRoute: typeof ProjetosPmoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/proposta-1-ajuste-ptr': {
+      id: '/proposta-1-ajuste-ptr'
+      path: '/proposta-1-ajuste-ptr'
+      fullPath: '/proposta-1-ajuste-ptr'
+      preLoaderRoute: typeof Proposta1AjustePtrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/proposta-2-ajuste-ptr': {
+      id: '/proposta-2-ajuste-ptr'
+      path: '/proposta-2-ajuste-ptr'
+      fullPath: '/proposta-2-ajuste-ptr'
+      preLoaderRoute: typeof Proposta2AjustePtrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorio-bolsas': {
+      id: '/relatorio-bolsas'
+      path: '/relatorio-bolsas'
+      fullPath: '/relatorio-bolsas'
+      preLoaderRoute: typeof RelatorioBolsasRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/central-solicitacoes/': {
       id: '/central-solicitacoes/'
@@ -412,25 +405,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CentralSolicitacoesIndexRouteImport
       parentRoute: typeof CentralSolicitacoesRoute
     }
-    '/central-solicitacoes/passagens-diarias': {
-      id: '/central-solicitacoes/passagens-diarias'
-      path: '/passagens-diarias'
-      fullPath: '/central-solicitacoes/passagens-diarias'
-      preLoaderRoute: typeof CentralSolicitacoesPassagensDiariasRouteImport
-      parentRoute: typeof CentralSolicitacoesRoute
-    }
-    '/central-solicitacoes/historico-geral': {
-      id: '/central-solicitacoes/historico-geral'
-      path: '/historico-geral'
-      fullPath: '/central-solicitacoes/historico-geral'
-      preLoaderRoute: typeof CentralSolicitacoesHistoricoGeralRouteImport
-      parentRoute: typeof CentralSolicitacoesRoute
-    }
-    '/central-solicitacoes/compras-pagamentos': {
-      id: '/central-solicitacoes/compras-pagamentos'
-      path: '/compras-pagamentos'
-      fullPath: '/central-solicitacoes/compras-pagamentos'
-      preLoaderRoute: typeof CentralSolicitacoesComprasPagamentosRouteImport
+    '/central-solicitacoes/ajuste-ptr': {
+      id: '/central-solicitacoes/ajuste-ptr'
+      path: '/ajuste-ptr'
+      fullPath: '/central-solicitacoes/ajuste-ptr'
+      preLoaderRoute: typeof CentralSolicitacoesAjustePtrRouteImport
       parentRoute: typeof CentralSolicitacoesRoute
     }
     '/central-solicitacoes/certificado': {
@@ -440,12 +419,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CentralSolicitacoesCertificadoRouteImport
       parentRoute: typeof CentralSolicitacoesRoute
     }
-    '/central-solicitacoes/ajuste-ptr': {
-      id: '/central-solicitacoes/ajuste-ptr'
-      path: '/ajuste-ptr'
-      fullPath: '/central-solicitacoes/ajuste-ptr'
-      preLoaderRoute: typeof CentralSolicitacoesAjustePtrRouteImport
+    '/central-solicitacoes/compras-pagamentos': {
+      id: '/central-solicitacoes/compras-pagamentos'
+      path: '/compras-pagamentos'
+      fullPath: '/central-solicitacoes/compras-pagamentos'
+      preLoaderRoute: typeof CentralSolicitacoesComprasPagamentosRouteImport
       parentRoute: typeof CentralSolicitacoesRoute
+    }
+    '/central-solicitacoes/historico-geral': {
+      id: '/central-solicitacoes/historico-geral'
+      path: '/historico-geral'
+      fullPath: '/central-solicitacoes/historico-geral'
+      preLoaderRoute: typeof CentralSolicitacoesHistoricoGeralRouteImport
+      parentRoute: typeof CentralSolicitacoesRoute
+    }
+    '/central-solicitacoes/passagens-diarias': {
+      id: '/central-solicitacoes/passagens-diarias'
+      path: '/passagens-diarias'
+      fullPath: '/central-solicitacoes/passagens-diarias'
+      preLoaderRoute: typeof CentralSolicitacoesPassagensDiariasRouteImport
+      parentRoute: typeof CentralSolicitacoesRoute
+    }
+    '/projetos/': {
+      id: '/projetos/'
+      path: '/'
+      fullPath: '/projetos/'
+      preLoaderRoute: typeof ProjetosIndexRouteImport
+      parentRoute: typeof ProjetosRoute
     }
   }
 }

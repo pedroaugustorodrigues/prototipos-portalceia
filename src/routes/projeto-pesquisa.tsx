@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef, forwardRef, useImperativeHandle } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
   FileText,
@@ -36,7 +36,6 @@ import {
   PencilLine,
   Pencil,
   X,
-  FileCheck2,
   Upload,
   FileSearch,
 } from "lucide-react";
@@ -73,7 +72,6 @@ const DEFAULT_STEP = STEPS.findIndex((s) => s.key === "projeto-pesquisa");
 function ProjetosWizardPage() {
   const project = PROJECTS[0];
   const [current, setCurrent] = useState(DEFAULT_STEP);
-  const pesquisaStepRef = useRef<{ autocompletar: () => void }>(null);
 
   const ActiveIcon = STEPS[current].icon;
 
@@ -166,25 +164,15 @@ function ProjetosWizardPage() {
                 </div>
                 {STEPS[current].key === "projeto-pesquisa" && (
                   <p className="text-sm text-muted-foreground mt-0.5">
-                    Geração assistida por IA do documento de Projeto de Pesquisa no padrão oficial CEIA/UFG.
+                    Complete o documento de Projeto de Pesquisa (padrão CEIA/UFG) manualmente, importando um arquivo existente ou com geração assistida por IA.
                   </p>
                 )}
               </div>
-              {STEPS[current].key === "projeto-pesquisa" && (
-                <button
-                  type="button"
-                  onClick={() => pesquisaStepRef.current?.autocompletar()}
-                  className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium hover:bg-muted/50 transition-colors"
-                >
-                  <Sparkles className="size-3.5" />
-                  Autocompletar campos
-                </button>
-              )}
             </div>
           </div>
 
           {STEPS[current].key === "projeto-pesquisa" ? (
-            <ProjetoPesquisaStep ref={pesquisaStepRef} />
+            <ProjetoPesquisaStep />
           ) : (
             <div className="p-6 md:p-8 min-h-[280px] flex items-center justify-center">
               <p className="text-sm text-muted-foreground">
@@ -243,7 +231,30 @@ const SECTIONS: Section[] = [
 
 type Generated = Record<SectionKey, string>;
 
-const ProjetoPesquisaStep = forwardRef<{ autocompletar: () => void }>(function ProjetoPesquisaStep(_props, ref) {
+type Modo = "manual" | "documento" | "ia";
+
+const MODOS: { key: Modo; icon: React.ComponentType<{ className?: string }>; title: string; desc: string }[] = [
+  {
+    key: "manual",
+    icon: PencilLine,
+    title: "Preencher manualmente",
+    desc: "Escreva você mesmo cada seção do template, sem IA.",
+  },
+  {
+    key: "documento",
+    icon: Upload,
+    title: "Importar documento existente",
+    desc: "Envie um PDF, DOC ou DOCX e leia os dados automaticamente para o projeto.",
+  },
+  {
+    key: "ia",
+    icon: Sparkles,
+    title: "Gerar com IA",
+    desc: "Informe os dados de contexto e deixe a IA estruturar o documento completo.",
+  },
+];
+
+function ProjetoPesquisaStep() {
   const project = PROJECTS[0];
 
   // Dados pré-preenchidos automaticamente (vêm do SRINFO / etapas anteriores)
@@ -282,9 +293,13 @@ const ProjetoPesquisaStep = forwardRef<{ autocompletar: () => void }>(function P
   const [numEtapas, setNumEtapas] = useState<number>(8);
   const [trl, setTrl] = useState<number>(6);
 
+  // Forma de completude escolhida
+  const [modo, setModo] = useState<Modo | null>(null);
+
   // Estado IA
   const [generating, setGenerating] = useState(false);
   const [generated, setGenerated] = useState<Generated | null>(null);
+  const [fonte, setFonte] = useState<"ia" | "documento" | "manual" | null>(null);
 
   // Importação de projeto existente
   const [importing, setImporting] = useState(false);
@@ -318,6 +333,7 @@ const ProjetoPesquisaStep = forwardRef<{ autocompletar: () => void }>(function P
         orcamentoTotal: dadosBaseFixos.totalProjeto,
         componentesTec: componentesExtraidos,
       }));
+      setFonte("documento");
       setImporting(false);
       toast.success("Projeto de pesquisa gerado com sucesso", {
         description: "Revise as seções estruturadas pela IA antes de exportar.",
@@ -325,14 +341,12 @@ const ProjetoPesquisaStep = forwardRef<{ autocompletar: () => void }>(function P
     }, GERACAO_MS);
   }
 
-  useImperativeHandle(ref, () => ({
-    autocompletar() {
-      setSiglaEmpresa("AVT");
-      setAreaPesquisa("Inteligência Artificial");
-      setComponentesTec("Processamento de Linguagem Natural; Large Language Models; Agentes autônomos");
-      setObservacoes((v) => v || "Projeto sem restrições contratuais adicionais.");
-    },
-  }));
+  function handleAutocompletar() {
+    setSiglaEmpresa("AVT");
+    setAreaPesquisa("Inteligência Artificial");
+    setComponentesTec("Processamento de Linguagem Natural; Large Language Models; Agentes autônomos");
+    setObservacoes((v) => v || "Projeto sem restrições contratuais adicionais.");
+  }
 
   const camposObrigatorios = [
     { label: "Sigla da Empresa", value: siglaEmpresa },
@@ -359,11 +373,31 @@ const ProjetoPesquisaStep = forwardRef<{ autocompletar: () => void }>(function P
         orcamentoTotal: dadosBaseFixos.totalProjeto,
         componentesTec,
       }));
+      setFonte("ia");
       setGenerating(false);
       toast.success("Projeto de pesquisa gerado com sucesso", {
         description: "Revise as seções estruturadas pela IA antes de exportar.",
       });
     }, GERACAO_MS);
+  }
+
+  function handlePreencherManual() {
+    setGenerated(
+      SECTIONS.reduce((acc, s) => {
+        acc[s.key] = "";
+        return acc;
+      }, {} as Generated)
+    );
+    setFonte("manual");
+    toast.success("Projeto de pesquisa criado para preenchimento manual", {
+      description: "Escreva cada seção você mesmo e exporte quando terminar.",
+    });
+  }
+
+  function handleVoltarManual() {
+    setGenerated(null);
+    setModo(null);
+    setFonte(null);
   }
 
   function updateSection(key: SectionKey, value: string) {
@@ -639,264 +673,6 @@ const ProjetoPesquisaStep = forwardRef<{ autocompletar: () => void }>(function P
 
     return (
       <>
-        {/* Como funciona — define expectativa do fluxo */}
-        <div className="rounded-xl border bg-card p-5">
-          <ol className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-0">
-            {[
-              {
-                n: 1,
-                icon: PencilLine,
-                title: "Anexe ou complete os campos",
-                desc: "Importe um projeto de pesquisa existente (PDF, DOC ou DOCX) ou informe manualmente os dados que ainda não estão no Portal.",
-              },
-              {
-                n: 2,
-                icon: Sparkles,
-                title: "IA estrutura o documento",
-                desc: `Gera as ${SECTIONS.length} seções do template oficial CEIA/UFG a partir do contexto.`,
-              },
-              {
-                n: 3,
-                icon: FileCheck2,
-                title: "Revise e exporte",
-                desc: "Edite livremente cada seção e exporte em PDF ou para o SIGAA.",
-              },
-            ].map((step, idx, arr) => {
-              const Icon = step.icon;
-              const isLast = idx === arr.length - 1;
-              return (
-                <li
-                  key={step.n}
-                  className={cn(
-                    "relative flex flex-col sm:px-5 first:sm:pl-0 last:sm:pr-0",
-                    !isLast && "sm:border-r"
-                  )}
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                      <Icon className="size-3.5" />
-                    </div>
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                      Passo {step.n}
-                    </span>
-                  </div>
-                  <div className="text-sm font-semibold leading-tight text-foreground">
-                    {step.title}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    {step.desc}
-                  </p>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-
-        {/* Importar projeto de pesquisa existente */}
-        <label
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragActive(true);
-          }}
-          onDragLeave={() => setDragActive(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setDragActive(false);
-            const file = e.dataTransfer.files?.[0];
-            if (file) handleImportFile(file);
-          }}
-          className={cn(
-            "rounded-xl border-2 border-dashed p-5 flex items-center gap-4 transition-colors cursor-pointer",
-            dragActive ? "border-primary bg-primary/5" : "border-muted-foreground/40 bg-muted/10 hover:border-primary/50 hover:bg-primary/5"
-          )}
-        >
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleImportFile(file);
-              e.target.value = "";
-            }}
-          />
-          <div className="size-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-            {importing ? (
-              <Loader2 className="size-4 animate-spin text-muted-foreground" />
-            ) : (
-              <Upload className="size-4 text-muted-foreground" />
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-foreground">
-              Importar projeto de pesquisa existente
-            </h4>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {importing
-                ? "Lendo o documento e preenchendo o projeto…"
-                : importedFileName
-                ? `Dados importados de “${importedFileName}”. Revise os campos abaixo.`
-                : "Arraste um arquivo aqui ou selecione no computador. Vamos ler o documento e preencher o projeto para você."}
-            </p>
-            {!importing && (
-              <div className="flex gap-1.5 mt-2">
-                {["PDF", "DOC", "DOCX"].map((ext) => (
-                  <span
-                    key={ext}
-                    className="text-[10px] font-medium text-muted-foreground bg-muted rounded-full px-2 py-0.5"
-                  >
-                    {ext}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-          <span className="shrink-0 inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium bg-card">
-            Selecionar arquivo
-          </span>
-        </label>
-
-        <div className="flex items-center gap-3">
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-xs text-muted-foreground shrink-0">
-            ou preencha os dados para gerar com IA
-          </span>
-          <div className="h-px flex-1 bg-border" />
-        </div>
-
-        {/* Campos a completar */}
-        <section className="space-y-6">
-          {/* Grupo 1 — Identificação */}
-          <FormGroup
-            title="Identificação"
-            description="Como a empresa e a área serão referenciadas no documento."
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5">
-              <Field
-                icon={Hash}
-                label="Sigla da Empresa"
-                required
-                filled={!!siglaEmpresa.trim()}
-                placeholder="Ex.: AVT"
-                value={siglaEmpresa}
-                onChange={setSiglaEmpresa}
-                hint="Usada nas referências à empresa ao longo do documento."
-              />
-              <Field
-                icon={FileSignature}
-                label="Área de Pesquisa"
-                required
-                filled={!!areaPesquisa.trim()}
-                placeholder="Ex.: Inteligência Artificial"
-                value={areaPesquisa}
-                onChange={setAreaPesquisa}
-                hint="Aparece na capa e nas premissas do projeto."
-              />
-              <MultiSelectField
-                icon={Building2}
-                label="Entidades envolvidas"
-                required
-                options={["UFG", "FUNAPE", "CEIA", "EMBRAPII"]}
-                value={entidades}
-                onChange={setEntidades}
-                allowCustom
-                hint="Algumas entidades já vêm marcadas — desmarque as que não se aplicam ou adicione outras."
-                className="md:col-span-2"
-              />
-            </div>
-          </FormGroup>
-
-          {/* Grupo 2 — Objetivo geral */}
-          <FormGroup
-            title="Objetivo e tecnologias"
-            description="Descreva o objetivo principal do projeto e as tecnologias envolvidas. Estas informações serão usadas pela IA na geração do documento."
-          >
-            <div className="space-y-5">
-              <Field
-                icon={Target}
-                label="Objetivo geral"
-                required
-                filled={!!objetivoGeral.trim()}
-                textarea
-                rows={4}
-                placeholder="Ex.: Desenvolver um framework de IA corporativa, com agentes autônomos…"
-                value={objetivoGeral}
-                onChange={setObjetivoGeral}
-                hint="Aparece no resumo, na introdução e na seção de objetivos do documento."
-              />
-              <Field
-                icon={Cpu}
-                label="Componentes tecnológicos a revisar"
-                required
-                filled={!!componentesTec.trim()}
-                textarea
-                rows={2}
-                placeholder="Ex.: Processamento de Linguagem Natural; Large Language Models; Agentes autônomos…"
-                value={componentesTec}
-                onChange={setComponentesTec}
-                hint="Tecnologias-chave que serão revisadas na seção de literatura."
-              />
-            </div>
-          </FormGroup>
-
-          {/* Grupo 3 — Parâmetros técnicos */}
-          <FormGroup
-            title="Parâmetros técnicos"
-            description="Definem o escopo tecnológico, o cronograma e a maturidade do projeto."
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-5 gap-y-5">
-              <NumberField
-                icon={Layers}
-                label="Nº de macroentregas"
-                required
-                value={numMacroentregas}
-                onChange={setNumMacroentregas}
-                min={3}
-                max={5}
-                hint="EMBRAPII recomenda de 3 a 5."
-              />
-              <NumberField
-                icon={ListOrdered}
-                label="Nº de etapas"
-                required
-                value={numEtapas}
-                onChange={setNumEtapas}
-                min={1}
-                max={50}
-                hint="Distribuídas entre as macroentregas."
-              />
-              <NumberField
-                icon={Gauge}
-                label="TRL"
-                required
-                value={trl}
-                onChange={setTrl}
-                min={1}
-                max={9}
-                hint="Nível de maturidade (1 a 9)."
-              />
-            </div>
-          </FormGroup>
-
-          {/* Grupo 4 — Informações adicionais */}
-          <FormGroup
-            title="Informações adicionais"
-            description="Use este espaço para qualquer informação relevante que não tenha campo específico acima."
-          >
-            <Field
-              icon={StickyNote}
-              label="Observações"
-              filled={!!observacoes.trim()}
-              textarea
-              rows={3}
-              placeholder="Ex.: requisitos especiais, restrições contratuais, contexto adicional para a IA considerar…"
-              value={observacoes}
-              onChange={setObservacoes}
-              hint="Campo opcional. As informações serão consideradas pela IA na geração do documento."
-            />
-          </FormGroup>
-        </section>
-
         {/* Dados já cadastrados — colapsável */}
         <CollapsibleSection
           title="Dados já cadastrados"
@@ -976,24 +752,268 @@ const ProjetoPesquisaStep = forwardRef<{ autocompletar: () => void }>(function P
           </div>
         </CollapsibleSection>
 
-        {/* CTA de geração — destaque visual */}
-        <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 md:p-6">
-          <div className="flex flex-col md:flex-row md:items-center gap-5">
-            <div className="size-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm">
-              <Sparkles className="size-6" />
+        {/* Como completar — escolha da forma */}
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">
+            Como você quer completar o Projeto de Pesquisa?
+          </h3>
+          <p className="text-xs text-muted-foreground mt-1 mb-4">
+            Escolha uma das formas abaixo. Em qualquer uma delas você poderá revisar as {SECTIONS.length} seções do template oficial CEIA/UFG antes de exportar.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {MODOS.map((m) => {
+              const Icon = m.icon;
+              const active = modo === m.key;
+              return (
+                <button
+                  key={m.key}
+                  type="button"
+                  onClick={() => (m.key === "manual" ? handlePreencherManual() : setModo(m.key))}
+                  className={cn(
+                    "text-left rounded-xl border p-4 transition-colors",
+                    active
+                      ? "border-primary bg-primary/5 ring-1 ring-primary/30"
+                      : "bg-card hover:border-primary/40 hover:bg-muted/30"
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "size-9 rounded-lg flex items-center justify-center mb-2.5",
+                      active ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
+                    )}
+                  >
+                    <Icon className="size-4" />
+                  </div>
+                  <div className="text-sm font-semibold text-foreground">{m.title}</div>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{m.desc}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Importar projeto de pesquisa existente */}
+        {modo === "documento" && (
+        <label
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragActive(false);
+            const file = e.dataTransfer.files?.[0];
+            if (file) handleImportFile(file);
+          }}
+          className={cn(
+            "rounded-xl border-2 border-dashed p-5 flex items-center gap-4 transition-colors cursor-pointer",
+            dragActive ? "border-primary bg-primary/5" : "border-muted-foreground/40 bg-muted/10 hover:border-primary/50 hover:bg-primary/5"
+          )}
+        >
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImportFile(file);
+              e.target.value = "";
+            }}
+          />
+          <div className="size-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+            {importing ? (
+              <Loader2 className="size-4 animate-spin text-muted-foreground" />
+            ) : (
+              <Upload className="size-4 text-muted-foreground" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="text-sm font-semibold text-foreground">
+              Importar projeto de pesquisa existente
+            </h4>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {importing
+                ? "Lendo o documento e preenchendo o projeto…"
+                : importedFileName
+                ? `Dados importados de “${importedFileName}”. Revise os campos abaixo.`
+                : "Arraste um arquivo aqui ou selecione no computador. Vamos ler o documento e preencher o projeto para você."}
+            </p>
+            {!importing && (
+              <div className="flex gap-1.5 mt-2">
+                {["PDF", "DOC", "DOCX"].map((ext) => (
+                  <span
+                    key={ext}
+                    className="text-[10px] font-medium text-muted-foreground bg-muted rounded-full px-2 py-0.5"
+                  >
+                    {ext}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          <span className="shrink-0 inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium bg-card">
+            Selecionar arquivo
+          </span>
+        </label>
+
+        )}
+
+        {modo === "ia" && (
+          <>
+        <div className="flex items-center justify-end">
+          <button
+            type="button"
+            onClick={handleAutocompletar}
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium hover:bg-muted/50 transition-colors"
+          >
+            <Sparkles className="size-3.5" />
+            Autocompletar campos
+          </button>
+        </div>
+
+        {/* Campos a completar */}
+        <section className="space-y-6">
+          {/* Grupo 1 — Identificação */}
+          <FormGroup
+            title="Identificação"
+            description="Como a empresa e a área serão referenciadas no documento."
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5">
+              <Field
+                icon={Hash}
+                label="Sigla da Empresa"
+                required
+                filled={!!siglaEmpresa.trim()}
+                placeholder="Ex.: AVT"
+                value={siglaEmpresa}
+                onChange={setSiglaEmpresa}
+              />
+              <Field
+                icon={FileSignature}
+                label="Área de Pesquisa"
+                required
+                filled={!!areaPesquisa.trim()}
+                placeholder="Ex.: Inteligência Artificial"
+                value={areaPesquisa}
+                onChange={setAreaPesquisa}
+              />
+              <MultiSelectField
+                icon={Building2}
+                label="Entidades envolvidas"
+                required
+                options={["UFG", "FUNAPE", "CEIA", "EMBRAPII"]}
+                value={entidades}
+                onChange={setEntidades}
+                allowCustom
+                className="md:col-span-2"
+              />
             </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-base font-semibold">Gerar Projeto de Pesquisa com IA</h4>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                A IA combinará os dados do projeto com seus complementos e estruturará todas as seções do template oficial CEIA/UFG.
-              </p>
+          </FormGroup>
+
+          {/* Grupo 2 — Objetivo geral */}
+          <FormGroup
+            title="Objetivo e tecnologias"
+            description="Descreva o objetivo principal do projeto e as tecnologias envolvidas. Estas informações serão usadas pela IA na geração do documento."
+          >
+            <div className="space-y-5">
+              <Field
+                icon={Target}
+                label="Objetivo geral"
+                required
+                filled={!!objetivoGeral.trim()}
+                textarea
+                rows={4}
+                placeholder="Ex.: Desenvolver um framework de IA corporativa, com agentes autônomos…"
+                value={objetivoGeral}
+                onChange={setObjetivoGeral}
+              />
+              <Field
+                icon={Cpu}
+                label="Componentes tecnológicos a revisar"
+                required
+                filled={!!componentesTec.trim()}
+                textarea
+                rows={2}
+                placeholder="Ex.: Processamento de Linguagem Natural; Large Language Models; Agentes autônomos…"
+                value={componentesTec}
+                onChange={setComponentesTec}
+              />
             </div>
+          </FormGroup>
+
+          {/* Grupo 3 — Parâmetros técnicos */}
+          <FormGroup
+            title="Parâmetros técnicos"
+            description="Definem o escopo tecnológico, o cronograma e a maturidade do projeto."
+          >
+            <div className="@container">
+            <div className="grid grid-cols-1 @min-[600px]:grid-cols-3 @min-[720px]:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-5 gap-y-5">
+              <NumberField
+                icon={Layers}
+                label="Nº de macroentregas"
+                required
+                value={numMacroentregas}
+                onChange={setNumMacroentregas}
+                min={3}
+                max={5}
+              />
+              <NumberField
+                icon={ListOrdered}
+                label="Nº de etapas"
+                required
+                value={numEtapas}
+                onChange={setNumEtapas}
+                min={1}
+                max={50}
+              />
+              <ScaleField
+                icon={Gauge}
+                label="TRL"
+                required
+                value={trl}
+                onChange={setTrl}
+                min={1}
+                max={9}
+              />
+            </div>
+            </div>
+          </FormGroup>
+
+          {/* Grupo 4 — Informações adicionais */}
+          <FormGroup
+            title="Informações adicionais"
+            description="Use este espaço para qualquer informação relevante que não tenha campo específico acima."
+          >
+            <Field
+              icon={StickyNote}
+              label="Observações"
+              filled={!!observacoes.trim()}
+              textarea
+              rows={3}
+              placeholder="Ex.: requisitos especiais, restrições contratuais, contexto adicional para a IA considerar…"
+              value={observacoes}
+              onChange={setObservacoes}
+            />
+          </FormGroup>
+        </section>
+
+          <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 md:p-6 flex flex-col">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="size-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm">
+                <Sparkles className="size-6" />
+              </div>
+              <h4 className="text-base font-semibold">Gerar com IA</h4>
+            </div>
+            <p className="text-sm text-muted-foreground flex-1">
+              A IA combinará os dados do projeto com seus complementos e estruturará todas as {SECTIONS.length} seções do template oficial CEIA/UFG.
+            </p>
             <button
               type="button"
               onClick={handleGerar}
               disabled={!podeGerar}
               className={cn(
-                "inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all shrink-0 w-full md:w-auto",
+                "mt-4 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all w-full",
                 podeGerar
                   ? "bg-primary text-primary-foreground hover:opacity-90 shadow-md hover:shadow-lg"
                   : "border border-primary/30 bg-primary/10 text-primary shadow-sm cursor-not-allowed opacity-70"
@@ -1012,7 +1032,9 @@ const ProjetoPesquisaStep = forwardRef<{ autocompletar: () => void }>(function P
               )}
             </button>
           </div>
-        </div>
+          </>
+        )}
+
       </>
     );
   }
@@ -1025,15 +1047,32 @@ const ProjetoPesquisaStep = forwardRef<{ autocompletar: () => void }>(function P
           <div className="size-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <Info className="size-4" />
           </div>
-          <div className="text-sm min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold text-foreground">Revise o conteúdo antes de exportar</span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-medium px-2 py-0.5">
-                <Check className="size-3" /> {SECTIONS.length} seções
-              </span>
+          <div className="text-sm min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-semibold text-foreground">Revise o conteúdo antes de exportar</span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-medium px-2 py-0.5">
+                  <Check className="size-3" /> {SECTIONS.length} seções
+                </span>
+              </div>
+              {fonte === "manual" && (
+                <button
+                  type="button"
+                  onClick={handleVoltarManual}
+                  className="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                >
+                  <ChevronLeft className="size-3.5" />
+                  Voltar
+                </button>
+              )}
             </div>
             <p className="mt-1 text-muted-foreground leading-relaxed">
-              Os textos abaixo foram estruturados pela IA seguindo o template oficial do Projeto de Pesquisa CEIA/UFG. Edite livremente cada seção e, ao final, exporte em PDF ou para preenchimento no SIGAA.
+              {fonte === "manual"
+                ? "Preencha livremente cada seção do template oficial do Projeto de Pesquisa CEIA/UFG."
+                : fonte === "documento"
+                ? "Os textos abaixo foram extraídos do documento importado e estruturados seguindo o template oficial do Projeto de Pesquisa CEIA/UFG. Edite livremente cada seção."
+                : "Os textos abaixo foram estruturados pela IA seguindo o template oficial do Projeto de Pesquisa CEIA/UFG. Edite livremente cada seção."}{" "}
+              Ao final, exporte em PDF ou para preenchimento no SIGAA.
             </p>
           </div>
         </div>
@@ -1092,7 +1131,7 @@ const ProjetoPesquisaStep = forwardRef<{ autocompletar: () => void }>(function P
       </>
     );
   }
-});
+}
 
 // ─── Código SIGAA ────────────────────────────────────────────────────────────
 
@@ -1334,7 +1373,6 @@ function Field({
   className,
   icon: Icon,
   filled,
-  hint,
 }: {
   label: string;
   value: string;
@@ -1346,7 +1384,6 @@ function Field({
   className?: string;
   icon?: React.ComponentType<{ className?: string }>;
   filled?: boolean;
-  hint?: string;
 }) {
   const baseInput =
     "w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring transition-colors placeholder:text-muted-foreground/60";
@@ -1359,7 +1396,6 @@ function Field({
           {required && <span className="text-red-600 ml-0.5">*</span>}
         </span>
       </span>
-      {hint && <span className="text-[11px] text-muted-foreground -mt-0.5">{hint}</span>}
       {textarea ? (
         <textarea
           rows={rows ?? 3}
@@ -1389,7 +1425,6 @@ function MultiSelectField({
   required,
   className,
   icon: Icon,
-  hint,
   allowCustom,
 }: {
   label: string;
@@ -1399,7 +1434,6 @@ function MultiSelectField({
   required?: boolean;
   className?: string;
   icon?: React.ComponentType<{ className?: string }>;
-  hint?: string;
   allowCustom?: boolean;
 }) {
   const [custom, setCustom] = useState("");
@@ -1427,7 +1461,6 @@ function MultiSelectField({
           {required && <span className="text-red-600 ml-0.5">*</span>}
         </span>
       </span>
-      {hint && <span className="text-[11px] text-muted-foreground -mt-0.5">{hint}</span>}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
         {[...options, ...customEntries].map((opt) => {
           const active = value.includes(opt);
@@ -1498,7 +1531,6 @@ function NumberField({
   max,
   className,
   icon: Icon,
-  hint,
   required,
 }: {
   label: string;
@@ -1508,7 +1540,6 @@ function NumberField({
   max?: number;
   className?: string;
   icon?: React.ComponentType<{ className?: string }>;
-  hint?: string;
   required?: boolean;
 }) {
   return (
@@ -1520,7 +1551,6 @@ function NumberField({
           {required && <span className="text-red-600 ml-0.5">*</span>}
         </span>
       </span>
-      {hint && <span className="text-[11px] text-muted-foreground -mt-0.5">{hint}</span>}
       <input
         type="number"
         value={value}
@@ -1533,6 +1563,60 @@ function NumberField({
         className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
       />
     </label>
+  );
+}
+
+function ScaleField({
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  className,
+  icon: Icon,
+  required,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+  min: number;
+  max: number;
+  className?: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  required?: boolean;
+}) {
+  const options = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <span className="flex items-center gap-2 text-xs font-medium text-foreground">
+        {Icon && <Icon className="size-3.5 text-muted-foreground" />}
+        <span>
+          {label}
+          {required && <span className="text-red-600 ml-0.5">*</span>}
+        </span>
+      </span>
+      {/* Linha única quando cabe; senão grade 5 colunas (1–5 / 6–9) — depende do @container do pai */}
+      <div className="grid grid-cols-5 gap-1.5 @min-[720px]:flex">
+        {options.map((n) => {
+          const active = n === value;
+          return (
+            <button
+              key={n}
+              type="button"
+              onClick={() => onChange(n)}
+              className={cn(
+                "h-10 w-full @min-[720px]:w-10 rounded-lg border text-sm font-semibold transition-colors shrink-0",
+                active
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "bg-background hover:border-primary/50 hover:bg-muted/50"
+              )}
+            >
+              {n}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
